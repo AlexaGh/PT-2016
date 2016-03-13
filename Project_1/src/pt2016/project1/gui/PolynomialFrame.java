@@ -4,13 +4,17 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
@@ -21,6 +25,9 @@ import pt2016.project1.model.mathematics.Polynomial;
 
 public class PolynomialFrame extends JFrame implements ActionListener {
 
+	private JMenuBar menuBar = new JMenuBar();
+	private JMenu menu = new JMenu("Tips");
+	
 	private JPanel leftPanel = new JPanel();
 	private JPanel rightPanel = new JPanel();
 
@@ -40,19 +47,26 @@ public class PolynomialFrame extends JFrame implements ActionListener {
 	private JButton insertBtn2 = new JButton("OK");
 
 	private JLabel pol1IsText = new JLabel("The first polynomial is: ");
+	private JLabel pol1Is = new JLabel("");
 	private JLabel pol2IsText = new JLabel("The second polynomial is: ");
-	private JLabel valueIsText = new JLabel("The value is: ");
+	private JLabel pol2Is = new JLabel("");
 	private JLabel resultedPolIsText = new JLabel("The resulted polynomial is: ");
+	private JLabel resultedPolIs = new JLabel("");
+	private JLabel resultPolIs2 = new JLabel("");
+
+	private JPanel auxPanel = new JPanel();
 
 	private JButton additionBtn = new JButton("Addition");
 	private JButton subtractionBtn = new JButton("Subtraction");
 	private JButton multiplicationBtn = new JButton("Multiplication");
 	private JButton divisionBtn = new JButton("Division");
-	private JButton integrateBtn = new JButton("Integrate");
+	private JButton integrateBtn = new JButton("Integration");
 	private JButton derivativeBtn = new JButton("Derivation");
-	private JButton multiplyByScalarBtn = new JButton("Multiply by scalar");
-	private JButton valueAtPoint = new JButton("Value at point");
-	private JButton findRootBtn = new JButton("FindRoot");
+
+	Polynomial p1 = new Polynomial();
+	Polynomial p2 = new Polynomial();
+	Polynomial[] result = new Polynomial[2];
+	PolyOperations po = new PolyOperations();
 
 	public PolynomialFrame() {
 
@@ -64,22 +78,15 @@ public class PolynomialFrame extends JFrame implements ActionListener {
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		// divide the frame into two parts: the left one (which will contain the
-		// Input and Output panels)
-		// and the right one which will contain buttons for the polynomial
-		// operations
+		/*menu.setMnemonic(KeyEvent.VK_A);
+		menu.getAccessibleContext().setAccessibleDescription("Where will this be?");
+		menuBar.add(menu);
+		add(menuBar);*/
+		
+		leftPanel.setLayout(new GridLayout(2, 1));
 
 		add(leftPanel);
 		add(rightPanel);
-
-		// the left panel contains the inputPanel in the upper part
-		// where the user should introduce the two polynomials he/she wants to
-		// operate with
-		// and the lower part which contains the output messages (if the
-		// polynomials aren't introduces in theor correct (mathematical)
-		// form it will signal so, it will output the resulted polynomial etc)
-
-		leftPanel.setLayout(new GridLayout(2, 1));
 
 		inputPanel.setLayout(new GridLayout(4, 4));
 		inputPanel.setBorder(new LineBorder(Color.BLACK));
@@ -93,17 +100,10 @@ public class PolynomialFrame extends JFrame implements ActionListener {
 		introducePoly1.setPreferredSize(new Dimension(450, 15));
 		inputPanel.add(introducePoly1);
 
-		// set the button in a panel in order to resize it
-		// in gridLayout you cannot resize components using
-		// setSize/setPrefferedSize w/e
-
 		panelForButton1.setLayout(new FlowLayout());
 		panelForButton1.add(insertBtn1);
 		Dimension maxSize = new Dimension(50, 50);
 		insertBtn1.setMaximumSize(maxSize);
-
-		//panelForButton1.add(insertBtn1);
-
 		inputPanel.add(panelForButton1);
 
 		insertPolyMessage2 = new JLabel("Introduce the second polynomial: ");
@@ -118,25 +118,11 @@ public class PolynomialFrame extends JFrame implements ActionListener {
 		panelForButton2.setLayout(new FlowLayout());
 		panelForButton2.add(insertBtn2);
 		insertBtn2.setMaximumSize(maxSize);
-
-		//panelForButton2.add(insertBtn2);
-
 		inputPanel.add(panelForButton2);
 
-		outputPanel.setLayout(new GridLayout(4, 1));
-		outputPanel.setBorder(new LineBorder(Color.BLACK));
-		outputPanel.add(pol1IsText);
-		outputPanel.add(pol2IsText);
-		outputPanel.add(valueIsText);
-		outputPanel.add(resultedPolIsText);
+		auxPanel.setLayout(new BorderLayout());
 
-		leftPanel.add(inputPanel);
-		leftPanel.add(outputPanel);
-
-		rightPanel.setLayout(new BorderLayout());
-		rightPanel.add(controlPanel, BorderLayout.CENTER);
-
-		controlPanel.setLayout(new GridLayout(3, 3));
+		controlPanel.setLayout(new GridLayout(2, 3));
 
 		controlPanel.add(additionBtn);
 		controlPanel.add(subtractionBtn);
@@ -144,15 +130,46 @@ public class PolynomialFrame extends JFrame implements ActionListener {
 		controlPanel.add(divisionBtn);
 		controlPanel.add(integrateBtn);
 		controlPanel.add(derivativeBtn);
-		controlPanel.add(multiplyByScalarBtn);
-		controlPanel.add(valueAtPoint);
-		controlPanel.add(findRootBtn);
 
-		rightPanel.add(controlPanel);
+		auxPanel.add(controlPanel, BorderLayout.CENTER);
+
+		leftPanel.add(inputPanel);
+		leftPanel.add(auxPanel);
+
+		outputPanel.setLayout(new GridLayout(7, 1));
+		pol1IsText.setFont(new Font("Courier New", Font.PLAIN, 25));
+		outputPanel.add(pol1IsText);
+
+		pol1Is.setFont(new Font("Serif", Font.PLAIN, 15));
+		outputPanel.add(pol1Is);
+
+		pol2IsText.setFont(new Font("Courier New", Font.PLAIN, 25));
+		outputPanel.add(pol2IsText);
+
+		pol2Is.setFont(new Font("Serif", Font.PLAIN, 15));
+		outputPanel.add(pol2Is);
+
+		resultedPolIsText.setFont(new Font("Courier New", Font.PLAIN, 25));
+		outputPanel.add(resultedPolIsText);
+
+		resultedPolIs.setFont(new Font("Serif", Font.PLAIN, 15));
+		outputPanel.add(resultedPolIs);
+
+		resultPolIs2.setFont(new Font("Serif", Font.PLAIN, 15));
+		outputPanel.add(resultPolIs2);
+
+		rightPanel.add(outputPanel);
 
 		insertBtn1.addActionListener(this);
-		setFocusable(true);
-		pack();
+		insertBtn2.addActionListener(this);
+
+		additionBtn.addActionListener(this);
+		subtractionBtn.addActionListener(this);
+		divisionBtn.addActionListener(this);
+		multiplicationBtn.addActionListener(this);
+		derivativeBtn.addActionListener(this);
+		integrateBtn.addActionListener(this);
+
 	}
 
 	public static void main(String[] args) {
@@ -164,43 +181,78 @@ public class PolynomialFrame extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		Polynomial p1 = new Polynomial();
-		Polynomial p2 = new Polynomial();
-		Polynomial result = new Polynomial();
-
-		PolyOperations po = new PolyOperations();
-		// result = po.division(p1, p2);
-		/*if (e.getSource() == insertBtn1) {
+		if (e.getSource() == insertBtn1) {
 			try {
 				p1 = PolyParse.makePolynomial(introducePoly1.getText());
-				// pol1IsText.setText(introducePoly1.getText());
-				pol1IsText.setText(p1.toString());
+				pol1Is.setText(p1.toString());
 			} catch (Exception exp) {
 				System.err.println("Trying buttons");
-				pol1IsText.setText("What you introduced is invalid");
+				pol1Is.setText("What you introduced is invalid");
 
 			}
-		} else*/ if (e.getSource() == insertBtn2) {
+		} else if (e.getSource() == insertBtn2) {
 			try {
 				p2 = PolyParse.makePolynomial(introducePoly2.getText());
-				pol2IsText.setText(p2.toString());
+				pol2Is.setText(p2.toString());
 				// pol2IsText.setText(introducePoly2.getText());
 			} catch (Exception exp) {
 				System.err.println("Trying buttons");
-				pol2IsText.setText("What you introduced is invalid");
-
+				pol2Is.setText("What you introduced is invalid");
 			}
-
 		}
 		if (e.getSource() == additionBtn) {
 			try {
-				result = po.addition(p1, p2);
-				resultedPolIsText.setText(result.toString());
+				result[0] = po.addition(p1, p2);
+				resultedPolIs.setText(result[0].toString());
 			} catch (Exception exp) {
-
 				System.err.println("Trying buttons");
-				pol1IsText.setText("What you introduced is invalid");
+				resultedPolIs.setText("Couldn't perform addition");
 
+			}
+		} else if (e.getSource() == subtractionBtn) {
+			try {
+				result[0] = po.subtraction(p1, p2);
+				resultedPolIs.setText(result[0].toString());
+			} catch (Exception exp) {
+				System.err.println("Trying buttons");
+				resultedPolIs.setText("Couldn't perform subtraction");
+
+			}
+		}
+
+		else if (e.getSource() == multiplicationBtn) {
+			try {
+				result[0] = po.multiplication(p1, p2);
+				resultedPolIs.setText(result[0].toString());
+			} catch (Exception exp) {
+				System.err.println("Trying buttons");
+				resultedPolIs.setText("Couldn't perform multiplication");
+
+			}
+		} else if (e.getSource() == integrateBtn) {
+			try {
+				result[0] = po.integration(p1);
+				resultedPolIs.setText(result[0].toString());
+			} catch (Exception exp) {
+				System.err.println("Trying buttons");
+				resultedPolIs.setText("Couldn't perform integration");
+			}
+		} else if (e.getSource() == derivativeBtn) {
+			try {
+				result[0] = po.differentiation(p1);
+				resultedPolIs.setText(result[0].toString());
+			} catch (Exception exp) {
+				System.err.println("Trying buttons");
+				resultedPolIs.setText("Couldn't perform differentiation");
+			}
+		} else if (e.getSource() == divisionBtn) {
+			try {
+				result = po.division(p1, p2);
+				resultedPolIs.setText(result[1].toString());
+				resultPolIs2.setText(result[0].toString());
+			} catch (Exception exp) {
+				System.err.println("Trying buttons");
+				resultedPolIs.setText("Couldn't perform division");
 			}
 		}
 	}
