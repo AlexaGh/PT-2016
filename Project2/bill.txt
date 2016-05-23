@@ -1,0 +1,9 @@
+Client: [
+Customer: 1; Ivanovici Anastasia>
+]
+
+
+
+Order Details: [
+Order Details: 1; <Product: 1; Jeans; 25; 50.000000>; 25;
+]

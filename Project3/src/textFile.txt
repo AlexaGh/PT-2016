@@ -1,0 +1,5 @@
+minNoOfServers = 1
+maxNoOfServers = 4
+minProcessTime = 4
+maxProcessTime = 7
+finishTime = 45

@@ -31,7 +31,7 @@ public class OperationsTest {
 
 		String pol1 = "7x^6+5x^5+3x^2+2x+10";
 		String pol2 = "6x^8+8x^6+10x^5+x+1";
-
+ 
 		Polynomial p1 = PolyParse.makePolynomial(pol1);
 		Polynomial p2 = PolyParse.makePolynomial(pol2);
 
