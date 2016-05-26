@@ -19,8 +19,13 @@ import java.util.regex.PatternSyntaxException;
 
 public class Dictionary implements DictionaryI, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8840136245548341162L;
+
 	private HashMap<String, ArrayList<String>> dictionary;
-	
+
 	private IteratorPaternRepo rep;
 
 	private final String DEFINITIONS = "C:\\Users\\Alexa\\Desktop\\GIT Repositories\\PT-2016\\Project5\\src\\synonyms.txt";
@@ -33,11 +38,10 @@ public class Dictionary implements DictionaryI, Serializable {
 	@Override
 	public void addSynonim(String word, String synonym) {
 
-		assert synonym != null : "word should not be null";
-		int preSize = dictionary.size();
+		assert isConsistent() : "Dictionary is not consistent!";
 
-		ArrayList<String> values = dictionary.get(word);	
-		
+		ArrayList<String> values = dictionary.get(word);
+
 		if (values == null) {
 			values = new ArrayList<String>();
 		}
@@ -46,10 +50,7 @@ public class Dictionary implements DictionaryI, Serializable {
 			dictionary.put(word, values);
 		}
 
-		int postSize = dictionary.size();
-
-		assert preSize < postSize : "Synonym was not added";
-		assert isConsistent() : "Dictionary is not consustent";
+		assert isConsistent() : "Dictionary is not consistent";
 	}
 
 	@Override
@@ -64,12 +65,15 @@ public class Dictionary implements DictionaryI, Serializable {
 		assert dictionary != null && dictionary.get(word) != null : "Word does not exist in dictionary";
 		int preSize = dictionary.size();
 		// if ((dictionary != null) && (dictionary.get(word) != null)) {
+
 		if (dictionary.containsKey(word)) {
 
-			dictionary.remove(word);
+			dictionary.entrySet().forEach(e -> e.getValue().forEach(s -> dictionary.get(s).remove(e.getKey())));
+			// dictionary.remove(word);
 
 			int postSize = dictionary.size();
 			assert preSize > postSize : "word was deleted";
+
 			assert isConsistent() : "Dictionary is not consistent";
 
 			return true;
@@ -168,19 +172,18 @@ public class Dictionary implements DictionaryI, Serializable {
 
 		return results;
 
-		/*
-		 * ArrayList<String> results = new ArrayList<String>(); try { Pattern p
-		 * = Pattern.compile(word); for (String candidate : dictionary.keySet())
-		 * { Matcher m = p.matcher(candidate); if (m.find()) {
-		 * results.add(candidate); } } } catch (PatternSyntaxException e) {
-		 * System.out.println("Incorrect pattern syntax: " + word); } return
-		 * results;
-		 */
 	}
 
 	@Override
 	public boolean isConsistent() {
 
+		/* boolean state = true;
+
+		 state = dictionary.entrySet().stream().allMatch(e ->
+		 e.getValue().stream().allMatch(s ->
+		 dictionary.get(s).contains(e.getKey())));
+		 return state;
+*/
 		for (String word : dictionary.keySet()) {
 			for (String syn : dictionary.get(word)) {
 				try {
@@ -197,6 +200,7 @@ public class Dictionary implements DictionaryI, Serializable {
 	@Override
 	public boolean removeDefinition(String word) {
 		assert ((dictionary != null) && (dictionary.get(word) != null));
+
 		if ((dictionary != null) && (dictionary.get(word) != null)) {
 			dictionary.remove(word);
 			return true;
@@ -210,17 +214,22 @@ public class Dictionary implements DictionaryI, Serializable {
 	public void addDefinition(ArrayList<String> entry) {
 
 		System.out.println("size: " + entry.size());
-		System.out.println("it: " + rep.getIterator());
-		for (Iterator iter = rep.getIterator(); iter.hasNext();) {
+		// System.out.println("it: " + rep.getIterator());
+		System.out.println("");
+
+		// DESIGN PATTERN 1:
+
+		for (Iterator iter = rep.getIterator(entry); iter.hasNext();) {
 			String strings = (String) iter.next();
-			//entry = (ArrayList<String>) iter.next();
 			addSynonim(entry.get(0), strings);
-			System.out.println("nr: " + entry.iterator()+ "strings: " + strings);
-			
+			addSynonim(strings, entry.get(0));
 		}
-		
-		/*for (int i = 1; i < entry.size(); i++)
-			addSynonim(entry.get(0), entry.get(i));*/
+/*
+		for (int i = 1; i < entry.size(); i++) {
+			addSynonim(entry.get(0), entry.get(i));
+			addSynonim(entry.get(i), entry.get(0));
+		}
+*/
 		assert isConsistent();
 	}
 
@@ -243,5 +252,10 @@ public class Dictionary implements DictionaryI, Serializable {
 			System.out.println("Error writing to file");
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public HashMap<String, ArrayList<String>> viewAll() {
+		return dictionary;
 	}
 }

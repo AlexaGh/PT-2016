@@ -1,6 +1,7 @@
 package pt2016.project5.dictionary;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface DictionaryI {
 
@@ -17,7 +18,10 @@ public interface DictionaryI {
 	public void addSynonim(String word, String synonym);
 
 	/**
+	 * Removes a synonym from the dictionary (together with the word).
 	 * 
+	 * @precond synonym != null
+	 * @postcond dictionary isConsistent &&  preSize > postSize
 	 * @param word
 	 * @param synonym
 	 * @return
@@ -75,4 +79,10 @@ public interface DictionaryI {
 	 * 
 	 */
 	public abstract void save();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public HashMap<String, ArrayList<String>> viewAll();
 }

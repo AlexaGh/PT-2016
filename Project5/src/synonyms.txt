@@ -1,24 +1,20 @@
 aquire:produce
-hymn:anthem
 seize:take
 hilarious:humorous
 detect:observe
 do:make, perform
 fill:turn
 produce: make
-observe: notice,detect
+observe:detect, notice
+witness:watch, see
 take:fill
-witness: see,watch
 see:watch
 act:do
 car:car
-joy:enjoyment,happiness
 watch:observe
+lucru:lucru,obiect
 get:aquire
-cat:kitty
-create: act, produce,make
-geam:fereastra
-catch: board,get, witness, delay, aquire, seize
-dog:dpggy
+create:make, produce, act
+catch:get, aquire, witness, seize, delay, board
 make:create, do
 notice:see

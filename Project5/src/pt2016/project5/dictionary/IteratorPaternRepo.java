@@ -8,7 +8,8 @@ public class IteratorPaternRepo implements Container, Serializable {
 	private ArrayList<String> values = new ArrayList<String>();
 
 	@Override
-	public Iterator getIterator() {
+	public Iterator getIterator(ArrayList<String> values) {
+		this.values= values;
 		return new NameIterator();
 	}
 

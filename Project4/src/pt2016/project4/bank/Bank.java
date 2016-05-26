@@ -32,7 +32,7 @@ public class Bank implements BankI, Serializable {
 	public void addAccforPerson(Person p, Account accAsc) {
 
 		assert isWellFormed() : "Isn't well formed";
-		assert p != null : "The person should't be null";
+		assert p == null : "The person should't be null";
 		assert accAsc != null : "The account shouldn't be null";
 
 		int preSizeAccount = 0;
